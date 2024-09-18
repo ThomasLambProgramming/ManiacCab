@@ -22,10 +22,12 @@ void ACarController::Tick(const float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(50, 5.0f, FColor::Black, TEXT("Ticking, " + InputAxis.ToString()));
+	HandleTurningInput();
 	UpdateAllWheels();
 	ProcessAirRotation();
 	ScaleCarFOVOnSpeed();
-	HandleTurningInput();
 }
 
 void ACarController::ScaleCarFOVOnSpeed()
@@ -33,13 +35,13 @@ void ACarController::ScaleCarFOVOnSpeed()
 	float powerCurve = FMath::Clamp(CarChassis->GetPhysicsLinearVelocity().Length() / CarTopSpeed, 0, 1.0f);
 	powerCurve += 0.3f;
 	FMath::Clamp(powerCurve, 0, 1);
-	float goalFov = FMath::Lerp(OriginalCameraFov, CameraFOVAtMaxSpeed, powerCurve);
+	const float goalFov = FMath::Lerp(OriginalCameraFov, CameraFOVAtMaxSpeed, powerCurve);
 	FollowCamera->FieldOfView = FMath::Lerp(FollowCamera->FieldOfView, goalFov, GetWorld()->GetDeltaSeconds());
 }
 
 void ACarController::ProcessAirRotation()
 {
-	if (IsInAir && DEBUG_DisableAirCorrection == false)
+	if (IsInAir && DisableAirCorrection == false)
 	{
 		FVector goalUp = CalculateInAirRotation();
 		goalUp = goalUp.RotateAngleAxis(90, CarChassis->GetRightVector());
@@ -68,10 +70,10 @@ void ACarController::ProcessAirRotation()
 
 void ACarController::UpdateAllWheels()
 {
-	bool FrontLeftWheelOnGround = IndividualWheelUpdate(FrontLeftWheel, true);
-	bool FrontRightWheelOnGround = IndividualWheelUpdate(FrontRightWheel, true);
-	bool BackLeftWheelOnGround = IndividualWheelUpdate(BackLeftWheel, false);
-	bool BackRightWheelOnGround = IndividualWheelUpdate(BackRightWheel, false);
+	const bool FrontLeftWheelOnGround = IndividualWheelUpdate(FrontLeftWheel, true);
+	const bool FrontRightWheelOnGround = IndividualWheelUpdate(FrontRightWheel, true);
+	const bool BackLeftWheelOnGround = IndividualWheelUpdate(BackLeftWheel, false);
+	const bool BackRightWheelOnGround = IndividualWheelUpdate(BackRightWheel, false);
 
 	if (FrontLeftWheelOnGround == false && FrontRightWheelOnGround == false &&
 		BackLeftWheelOnGround == false && BackRightWheelOnGround == false)
@@ -139,9 +141,9 @@ bool ACarController::IndividualWheelUpdate(UStaticMeshComponent* a_WheelToCheck,
 
 bool ACarController::WheelGroundCheck(const UStaticMeshComponent* a_WheelToCheck, float& o_DistanceToFloor) const
 {
-	FTransform wheelTransform = a_WheelToCheck->GetComponentTransform();
-	FVector traceStart = wheelTransform.GetLocation() + FVector(0,0,WheelCheckHeightOffset);
-	FVector traceEnd = wheelTransform.GetLocation() + FVector(0,0,WheelCheckHeightOffset) + (-CarChassis->GetUpVector() * (FloorCheckLimit + WheelCheckHeightOffset));
+	const FTransform wheelTransform = a_WheelToCheck->GetComponentTransform();
+	const FVector traceStart = wheelTransform.GetLocation() + FVector(0,0,WheelCheckHeightOffset);
+	const FVector traceEnd = wheelTransform.GetLocation() + FVector(0,0,WheelCheckHeightOffset) + (-CarChassis->GetUpVector() * (FloorCheckLimit + WheelCheckHeightOffset));
 	FHitResult hitResult;
 
 	FCollisionQueryParams queryParams;
@@ -213,7 +215,7 @@ FVector ACarController::CalculateInAirRotation() const
 	return averageNormal;
 }
 
-FVector ACarController::CalculateSpringForce(UStaticMeshComponent* a_Wheel, const float a_DistanceToFloor) const
+FVector ACarController::CalculateSpringForce(const UStaticMeshComponent* a_Wheel, const float a_DistanceToFloor) const
 {
 	FVector springDirection = CarChassis->GetUpVector();
 	FVector tireWorldVel = CarChassis->GetPhysicsLinearVelocityAtPoint(a_Wheel->GetComponentLocation());
@@ -336,7 +338,7 @@ void ACarController::HandBrakeActionPressed(const FInputActionValue& a_Value)
 void ACarController::HandBrakeActionReleased(const FInputActionValue& a_Value)
 {
 	IsDrifting = false;
-	holdingSpace = false;
+	HoldingSpace = false;
 
 	if (BackRightTireDriftEffect != nullptr)
 	{

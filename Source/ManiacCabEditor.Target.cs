@@ -8,7 +8,7 @@ public class ManiacCabEditorTarget : TargetRules
 	public ManiacCabEditorTarget(TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Editor;
-		DefaultBuildSettings = BuildSettingsVersion.V2;
+		DefaultBuildSettings = BuildSettingsVersion.V5;
 
 		ExtraModuleNames.AddRange( new string[] { "ManiacCab" } );
 	}

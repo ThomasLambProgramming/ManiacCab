@@ -15,60 +15,43 @@ class MANIACCAB_API ACarController : public APawn
 	GENERATED_BODY()
 
 public:
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Car Camera");
 	UCameraComponent* FollowCamera;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Car Input")
-	FVector InputAxis;
-	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Car Physics")
 	float SpringRestDistance = 50;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Car Physics")
 	float SpringStrength = 15000;
-	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Car Physics")
 	float DampingAmount= 3000;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Car Physics")
 	float FloorCheckLimit = 100;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Car Physics")
 	float TireMass = 30;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Car Speed")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Car Movement")
 	float CarTopSpeed = 2000;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Car Speed")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Car Movement")
 	float MaxTorque = 80000;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Car Movement")
 	float MaxTurnAngle = 35;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Car Movement")
 	float RotateSpeed = 15;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Car Movement")
+	float WheelCheckHeightOffset = 50.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Car Air Settings")
 	float InAirCorrectionSpeed = 0.5f;
-	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Car Air Settings")
 	float AirLogicEnableDelay = 0.9f;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Car Air Settings")
 	float AirFloorCheckResetDelay = 1.0f;
-	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Car Air Settings")
 	float PerAirTraceAngle = 5.0f;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Car Air Settings")
 	float InAirFloorCheckLimit = 110.0f;
-	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Car Air Settings")
 	float VelocityYawEveningSpeed = 0.25f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Car Movement")
-	float WheelCheckHeightOffset = 50.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Car Camera")
 	float CameraFOVAtMaxSpeed = 100.0f;
@@ -78,40 +61,32 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Car Curve References")
 	UCurveFloat* CarTorqueCurve;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Car Curve References")
 	UCurveFloat* FrontWheelFrictionCurve;
-	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Car Curve References")
 	UCurveFloat* BackWheelFrictionCurve;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Car Curve References")
 	UCurveFloat* FrontWheelDriftFrictionCurve;
-	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Car Curve References")
 	UCurveFloat* BackWheelDriftFrictionCurve;
-	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Car Asset References")
 	UStaticMeshComponent* CarChassis;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Car Asset References")
 	UStaticMeshComponent* FrontLeftWheel;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Car Asset References")
 	UStaticMeshComponent* FrontRightWheel;
-	//Sets default values for this pawn's properties
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Car Asset References")
 	UStaticMeshComponent* BackLeftWheel;
-	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Car Asset References")
 	UStaticMeshComponent* BackRightWheel;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Car Asset References")
 	UNiagaraSystem* TireDriftingParticleEffect;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Car Input")
+	FVector InputAxis;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Input Mapping")
 	UInputMappingContext* InputMappingContext;
-	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Input Mapping")
 	UInputAction* SteeringInputAction;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Input Mapping")
@@ -124,18 +99,13 @@ public:
 	UInputAction* ResetCarAction;
 
 	
-	UPROPERTY(EditDefaultsOnly, Category="Debug Settings")
-	FVector CubeSpawnOffset;
-	UPROPERTY(EditDefaultsOnly, Category="Debug Settings")
-	UStaticMesh* DebugCubeMesh;
 	UPROPERTY(EditAnywhere, Category="Debug Settings")
 	bool DrawForces = true;
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Debug Settings")
-	bool DEBUG_DisableAirCorrection = false;
+	bool DisableAirCorrection = false;
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category="Debug Settings")
 	bool AllowCarInput = true;
 
-	
 	UPROPERTY()
 	FTimerHandle InAirTimerHandle;	
 	UPROPERTY()
@@ -147,28 +117,17 @@ public:
 	UNiagaraComponent* BackRightTireDriftEffect;
 	
 private:
-	
-	UPROPERTY()
 	float OriginalCameraFov = 0;
-	
-	UPROPERTY()
 	float OriginalFloorCheckValue;
-	
-	UPROPERTY()
 	bool IsInAir = false;
-	
-	ACarController();
-
-	bool holdingSpace = false;
+	bool HoldingSpace = false;
 	bool IsDrifting = false;
 
 public:
-	
 	UFUNCTION(BlueprintCallable)
 	void EnableCarInput(bool Allow) {AllowCarInput = Allow;}
 
 protected:
-	
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 	
@@ -183,11 +142,14 @@ protected:
 	void ResetFloorCheckToOriginal();
 	
 	FVector CalculateInAirRotation() const;
-	FVector CalculateSpringForce(UStaticMeshComponent* a_Wheel, const float a_DistanceToFloor) const;
+	FVector CalculateSpringForce(const UStaticMeshComponent* a_Wheel, const float a_DistanceToFloor) const;
 	FVector CalculateWheelFrictionForce(const UStaticMeshComponent* a_Wheel, const UCurveFloat* a_FrictionCurve) const;
 	FVector CalculateAccelerationForce(UStaticMeshComponent* a_Wheel) const;
+	
+	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
 private:
+	ACarController();
 
 	void HandleTurningInput() const;
 	void SteeringAction(const FInputActionValue& a_Value);
@@ -196,8 +158,4 @@ private:
 	void HandBrakeActionPressed(const FInputActionValue& a_Value);
 	void HandBrakeActionReleased(const FInputActionValue& a_Value);
 	void ResetCarActionPressed(const FInputActionValue& a_Value);
-	
-protected:
-	
-	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 };
